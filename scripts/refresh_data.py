@@ -53,10 +53,15 @@ def _region_labels(df_prepared: pd.DataFrame) -> list[dict]:
 
 
 def _long_to_nested(long_df: pd.DataFrame) -> dict:
-    """{region → {mes → {key → valor}}} con floats redondeados a 2."""
+    """{region → {mes → {key → valor}}}. Ratios (`pct_*`) con 6 decimales para
+    preservar precisión (%); montos con 2 decimales.
+    """
     out: dict = {}
     for (region, mes), sub in long_df.groupby(["region", "mes"], sort=False):
-        d = {row.key: round(float(row.valor), 2) for row in sub.itertuples()}
+        d = {}
+        for row in sub.itertuples():
+            decimals = 6 if row.key.startswith("pct_") else 2
+            d[row.key] = round(float(row.valor), decimals)
         out.setdefault(region, {})[mes] = d
     return out
 
