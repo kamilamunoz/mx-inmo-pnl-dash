@@ -1,7 +1,7 @@
 // mx-inmo-pnl-dash — frontend
 // Kamila mantiene sola. Vanilla JS, sin frameworks.
 
-const PASSWORD = 'p+L_iNM0*M3X_C12ud4d';
+const PASSWORD = 'reporte_fincorp_1';
 const STORAGE_KEY = 'mx-inmo-pnl-auth';
 
 // Webhook de Google Chat para reportar NIDs con signo raro a Jeff.
