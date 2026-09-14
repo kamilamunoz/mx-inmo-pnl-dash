@@ -235,6 +235,15 @@ function fmtPct(v) {
   return (v * 100).toLocaleString('es-MX', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
 }
 
+// Para subtotales (`sign: 'net'` — CM, Gross Profit, Unlevered) usa el signo
+// del valor: positivo → verde (income), negativo → rojo (cost), 0/null → ámbar.
+function signClass(row, val) {
+  if (row.sign === 'net' && typeof val === 'number' && isFinite(val) && val !== 0) {
+    return val > 0 ? 'signo-income' : 'signo-cost';
+  }
+  return `signo-${row.sign}`;
+}
+
 function renderTable() {
   const meses = mesesToShow();
   const structure = state.data.estructura;
@@ -279,7 +288,7 @@ function renderTable() {
       const val = cell === undefined ? null : cell;
       const opts = fmtOpts(row);
       const cellEl = document.createElement('td');
-      cellEl.classList.add(`signo-${row.sign}`);
+      cellEl.classList.add(signClass(row, val));
 
       if (showPctRow(row) && val !== null && revByMonth[m]) {
         const pct = val / revByMonth[m];
@@ -763,7 +772,7 @@ function renderCmp() {
       const raw = sums[r][row.key];
       const val = raw === undefined ? null : applyMetric(raw, r, row);
       const cell = document.createElement('td');
-      cell.className = `region-col signo-${row.sign}`;
+      cell.className = `region-col ${signClass(row, val)}`;
       if (r === best) cell.classList.add('best');
       if (r === worst) cell.classList.add('worst');
       cell.innerHTML = renderCellValue(raw, val, row, r);
@@ -777,7 +786,7 @@ function renderCmp() {
     const totalRaw = sums['Total'][row.key];
     const totalVal = totalRaw === undefined ? null : applyMetric(totalRaw, 'Total', row);
     const totalCell = document.createElement('td');
-    totalCell.className = `region-col total-col signo-${row.sign}`;
+    totalCell.className = `region-col total-col ${signClass(row, totalVal)}`;
     totalCell.innerHTML = renderCellValue(totalRaw, totalVal, row, 'Total');
     tr.appendChild(totalCell);
 
